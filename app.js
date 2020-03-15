@@ -16,7 +16,24 @@ var channel_id = process.env.CHANNEL_ID;
 // You don't need to make changes to anything above this line
 //
 //
+// Initialize app
+var express = require("express");
+var request = require("request");
+var bodyParser = require("body-parser");
+var app = express();
 
+// Define JSON parsing mode for Events API requests
+app.use(bodyParser.json());
+
+// Get environment variables
+var api_token = process.env.API_TOKEN;
+var channel_id = process.env.CHANNEL_ID;
+
+//
+//
+// You don't need to make changes to anything above this line
+//
+//
 
 
 // Handle Events API events
@@ -52,7 +69,7 @@ function buildMessage(user_id, user_name, status_text, status_emoji) {
     var message = [
       {
         pretext: user_name + " updated their status:",
-        text: status_emoji + " *" + status_text + "*"
+        text: status_emoji + "*" + status_text + "*"
       }
     ];
   } else {
@@ -76,11 +93,9 @@ function postUpdate(attachments) {
     text: JSON.stringify(attachments),
     pretty: true
   };
- request.post({
-       url: 'https://slack.com/api/chat.postmessage',
-
- 
-    
+  request.post(
+    'https://slack.com/api/chat.postmessage',
+    {
       form: data
     },
     function(err, resp, body) {
@@ -96,7 +111,7 @@ function postUpdate(attachments) {
 }
 
 // Listen for requests
-var listener = app.listen(process.env.PORT, function() {
+var listener = app.use(process.env.PORT, function() {
   console.log("App is listening on port " + listener.address().port);
 });
 
