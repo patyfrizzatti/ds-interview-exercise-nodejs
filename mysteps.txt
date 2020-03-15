@@ -1,0 +1,3 @@
+runned
+
+$ ./node_modules/.bin/slack-verify --secret b5dca621ec94df5cc25f5a421da9cfdf [--path=/events] [--port=3000]
