@@ -1,11 +1,11 @@
 // Initialize app
-var express = require('express');
-var request = require('request');
-var bodyParser = require('body-parser');
+var express = require("express");
+var request = require("request");
+var bodyParser = require("body-parser");
 var app = express();
 
 // Define JSON parsing mode for Events API requests
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 // Get environment variables
 var api_token = process.env.API_TOKEN;
@@ -19,14 +19,11 @@ var channel_id = process.env.CHANNEL_ID;
 
 
 
-
 // Handle Events API events
-app.get('/events', function(req, res){
-
-  if(req.body.challenge) {
+app.get("/events", function(req, res) {
+  if (req.body.challenge) {
     // Respond to the challenge
-    res.send({"challenge": req.body.challenge});
-
+    res.send({ challenge: req.body.challenge });
   } else {
     // Store details about the user
     var evt = req.body.event;
@@ -36,7 +33,7 @@ app.get('/events', function(req, res){
     var status_emoji = evt.user.profile.status_emoji;
 
     // If no full name set, use the username instead
-    if(user_name == "") {
+    if (user_name == "") {
       user_name = evt.user.name;
     }
 
@@ -48,23 +45,21 @@ app.get('/events', function(req, res){
   }
 });
 
-
 // Build the message payload
 function buildMessage(user_id, user_name, status_text, status_emoji) {
-
-  if(status_text.length > 0) {
+  if (status_text.length > 0) {
     // If their status contains some text
     var message = [
       {
-        "pretext": user_name + " updated their status:",
-        "text": status_emoji + " *" + status_text + "*"
+        pretext: user_name + " updated their status:",
+        text: status_emoji + " *" + status_text + "*"
       }
     ];
   } else {
     // If their status is empty
     var message = [
       {
-        "pretext": user_name + " cleared their status"
+        pretext: user_name + " cleared their status"
       }
     ];
   }
@@ -72,24 +67,27 @@ function buildMessage(user_id, user_name, status_text, status_emoji) {
   postUpdate(message);
 }
 
+
 // Post the actual message to a channel
 function postUpdate(attachments) {
   var data = {
-    "token": api_token,
-    "channel": channel_id,
-    "text": JSON.stringify(attachments),
-    "pretty": true
+    token: api_token,
+    channel: channel_id,
+    text: JSON.stringify(attachments),
+    pretty: true
   };
-  request.post(
-    "https://slack.com/api/chat.postmessage",
-    {
+ request.post({
+       url: 'https://slack.com/api/chat.postmessage',
+
+ 
+    
       form: data
     },
     function(err, resp, body) {
-      if(err) {
+      if (err) {
         // If there's an HTTP error, log the error message
         console.log(err);
-      } else{
+      } else {
         // Otherwise, log Slack API responses
         console.log(body);
       }
@@ -98,6 +96,7 @@ function postUpdate(attachments) {
 }
 
 // Listen for requests
-var listener = app.listener(process.env.PORT, function () {
-  console.log('App is listening on port ' + listener.address().port);
+var listener = app.listen(process.env.PORT, function() {
+  console.log("App is listening on port " + listener.address().port);
 });
+
